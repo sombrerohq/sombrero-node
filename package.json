@@ -1,0 +1,46 @@
+{
+  "name": "sombrero-node",
+  "version": "0.0.1",
+  "description": "Sombrero Cluster Node",
+  "scripts": {
+    "test": "istanbul cover lab -- -v  tests/*.js -l && istanbul check-coverage --statements 60 --functions 50 --  lines 65 --branches 60",
+    "jshint": "jshint -c .jshintrc --exclude-path .gitignore .",
+    "codestyle": "jscs -p google lib/ tests/",
+    "coverage": "open coverage/lcov-report/index.html"
+  },
+  "main": "lib/node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pgte/skiff.git"
+  },
+  "keywords": [
+    "raft",
+    "distributed",
+    "consensus",
+    "election",
+    "vote"
+  ],
+  "author": "pgte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pgte/skiff/issues"
+  },
+  "homepage": "https://github.com/pgte/skiff",
+  "devDependencies": {
+    "jshint": "^2.5.6",
+    "lab": "^4.5.1",
+    "jscs": "^1.6.2",
+    "pre-commit": "0.0.9",
+    "istanbul": "^0.3.2"
+  },
+  "dependencies": {
+    "multilevel": "^6.0.1",
+    "propagate": "^0.3.0",
+    "skiff": "^0.7.11"
+  },
+  "pre-commit": [
+    "codestyle",
+    "jshint",
+    "test"
+  ]
+}
