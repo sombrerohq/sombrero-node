@@ -16,7 +16,7 @@ var Node = require('../');
 
 describe('standalone', function() {
 
-  var dbPath = path.join(__dirname, '..', 'db');
+  var dbPath = path.join(__dirname, '..', 'db', 'standalone');
 
   rimraf.sync(dbPath);
   mkdirp.sync(dbPath);
