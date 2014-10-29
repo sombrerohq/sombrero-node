@@ -3,7 +3,12 @@
 [![Build Status](https://travis-ci.org/sombrerohq/sombrero-node.svg)](https://travis-ci.org/sombrerohq/sombrero-node)
 [![Dependency Status](https://david-dm.org/sombrerohq/sombrero-node.svg)](https://david-dm.org/sombrerohq/sombrero-node)
 
-Node of a Sombrero cluster. Uses [Skiff](https://github.com/pgte/skiff) underneath.
+Node of a Sombrero cluster. Uses [Skiff](https://github.com/pgte/skiff) (A [Raft](http://raftconsensus.github.io/) implementation) underneath.
+
+* As a leader, creates an independent RPC server for servicing requests from followers.
+* As a follower, forwards the write requests to the leader.
+* As a follower, makes sure that the leader writes to the issuing follower before returning.
+* Because of this last point, it implements a read-your-writes on a follower.
 
 ## Install
 
