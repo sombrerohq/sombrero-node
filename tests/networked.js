@@ -14,32 +14,57 @@ var mkdirp = require('mkdirp');
 
 var Node = require('../');
 
-describe('standalone', function() {
+describe('networked', function() {
 
-  var dbPath = path.join(__dirname, '..', 'db', 'standalone');
+  var dbPath = path.join(__dirname, '..', 'db', 'networked');
 
   rimraf.sync(dbPath);
   mkdirp.sync(dbPath);
 
-  var node;
+  var leader;
+  var follower;
   var commands;
 
-  it('can get created', function(done) {
-    node = Node('tcp+msgpack://localhost:8080', {
-      skiff: {dbPath: dbPath},
-      port: 7000
+  it('can create leader', function(done) {
+    leader = Node('tcp+msgpack://localhost:8090', {
+      skiff: {dbPath: path.join(dbPath, 'leader')},
+      port: 8070
+    });
+    leader.once('leader', function() {
+      done();
+    });
+  });
+
+  it('create follower', function(done) {
+    follower = Node('tcp+msgpack://localhost:8091', {
+      skiff: {
+        dbPath: path.join(dbPath, 'follower'),
+        standby: true
+      },
+      port: 8071
     });
     done();
   });
 
+  it('can join follower', function(done) {
+    leader.join(follower.id, {
+      hostname: 'localhost',
+      port: 8071
+    }, done);
+  });
+
+  it('waits a bit', function(done) {
+    setTimeout(done, 1e3);
+  });
+
   it('can put', function(done) {
-    node.put('key', 'value', done);
+    follower.put('key', 'value', done);
   });
 
   it('can get', function(done) {
-    node.get('key', function(err, value) {
+    follower.get('key', function(err, value) {
       if (err) {
-        throw err;
+        done(err);
       }
       assert.equal(value, 'value');
       done();
@@ -47,7 +72,7 @@ describe('standalone', function() {
   });
 
   it('handles errors on callback', function(done) {
-    node.get('doesnotexist', function(err) {
+    follower.get('doesnotexist', function(err) {
       assert.instanceOf(err, Error);
       assert.equal(err.message, 'Key not found in database');
       done();
@@ -55,8 +80,8 @@ describe('standalone', function() {
   });
 
   it('handles errors by emitting error when no callback', function(done) {
-    node.get('doesnotexist');
-    node.once('error', function(err) {
+    follower.get('doesnotexist');
+    follower.once('error', function(err) {
       assert.instanceOf(err, Error);
       assert.equal(err.message, 'Key not found in database');
       done();
@@ -64,11 +89,11 @@ describe('standalone', function() {
   });
 
   it('can delete', function(done) {
-    node.del('key', done);
+    follower.del('key', done);
   });
 
   it('delete worked', function(done) {
-    node.get('key', function(err) {
+    follower.get('key', function(err) {
       assert.instanceOf(err, Error);
       assert.equal(err.message, 'Key not found in database');
       done();
@@ -84,7 +109,7 @@ describe('standalone', function() {
         value: 'value ' + i
       });
     }
-    var ws = node.createWriteStream();
+    var ws = follower.createWriteStream();
     async.each(commands, ws.write.bind(ws), done);
   });
 
@@ -93,13 +118,13 @@ describe('standalone', function() {
       delete command.type;
     });
 
-    node.createReadStream().pipe(concat(function(data) {
+    follower.createReadStream().pipe(concat(function(data) {
       assert.deepEqual(data, commands);
     })).once('finish', done);
   });
 
   it('can batch', function(done) {
-    node.batch([
+    follower.batch([
       {
         type: 'put',
         key: 'a',
@@ -114,7 +139,7 @@ describe('standalone', function() {
   });
 
   it('batch worked', function(done) {
-    async.map(['a', 'b'], node.get.bind(node), function(err, values) {
+    async.map(['a', 'b'], follower.get.bind(follower), function(err, values) {
       if (err) {
         throw err;
       }
@@ -122,4 +147,5 @@ describe('standalone', function() {
       done();
     });
   });
+
 });
