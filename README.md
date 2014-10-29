@@ -1,5 +1,8 @@
 # Sombrero Node
 
+[![Build Status](https://travis-ci.org/sombrerohq/sombrero-node.svg)](https://travis-ci.org/sombrerohq/sombrero-node)
+[![Dependency Status](https://david-dm.org/sombrerohq/sombrero-node.svg)](https://david-dm.org/sombrerohq/sombrero-node)
+
 Node of a Sombrero cluster. Uses [Skiff](https://github.com/pgte/skiff) underneath.
 
 ## Install
