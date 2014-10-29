@@ -66,6 +66,11 @@ node.join('tcp+msgpack://hostname:8000', options, function(err) {
 
 Leaves a node given its URL.
 
+## Events
+
+A Sombrero node emits the same [events as a Skiff node](https://github.com/pgte/skiff#events).
+
+
 # Setting up a cluster
 
 To boot a cluster, start a node and wait for it to become a leader. Then, create each additional node in the `standby` mode (`options.skiff.standby: true`) and do `leader.join(nodeURL)`.
