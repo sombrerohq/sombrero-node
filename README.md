@@ -71,6 +71,10 @@ node.join('tcp+msgpack://hostname:8000', options, function(err) {
 
 Leaves a node given its URL.
 
+## .close(cb)
+
+Closes the server and the skiff node.
+
 ## Events
 
 A Sombrero node emits the same [events as a Skiff node](https://github.com/pgte/skiff#events).

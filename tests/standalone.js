@@ -122,4 +122,8 @@ describe('standalone', function() {
       done();
     });
   });
+
+  it('closes', function(done) {
+    node.close(done);
+  });
 });
