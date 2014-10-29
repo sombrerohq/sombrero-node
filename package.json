@@ -46,7 +46,7 @@
     "propagate": "^0.3.0",
     "reconnect-net": "0.0.0",
     "rpc-stream": "^2.1.1",
-    "skiff": "^0.8.1",
+    "skiff": "^0.8.2",
     "xtend": "^4.0.0"
   },
   "pre-commit": [
