@@ -1,6 +1,6 @@
 {
   "name": "sombrero-node",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Sombrero Cluster Node",
   "scripts": {
     "test": "istanbul cover lab -- -v  tests/*.js -l && istanbul check-coverage --statements 60 --functions 60 --  lines 65 --branches 60",
