@@ -28,7 +28,10 @@ describe('networked', function() {
   it('can create leader', function(done) {
     leader = Node('tcp+msgpack://localhost:8090', {
       skiff: {dbPath: path.join(dbPath, 'leader')},
-      port: 8070
+      port: 8070,
+      gossip: {
+        port: 7070
+      }
     });
     leader.once('leader', function() {
       done();
@@ -41,7 +44,10 @@ describe('networked', function() {
         dbPath: path.join(dbPath, 'follower'),
         standby: true
       },
-      port: 8071
+      port: 8071,
+      gossip: {
+        port: 7071
+      }
     });
     done();
   });
@@ -49,7 +55,8 @@ describe('networked', function() {
   it('can join follower', function(done) {
     leader.join(follower.id, {
       hostname: 'localhost',
-      port: 8071
+      port: 8071,
+      gossipPort: 7071
     }, done);
   });
 
@@ -146,6 +153,12 @@ describe('networked', function() {
       assert.deepEqual(values, ['A', 'B']);
       done();
     });
+  });
+
+  it('closes all nodes', function(done) {
+    async.each([leader, follower], function(node, cb) {
+      node.close(cb);
+    }, done);
   });
 
 });

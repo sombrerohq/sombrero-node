@@ -27,7 +27,10 @@ describe('standalone', function() {
   it('can get created', function(done) {
     node = Node('tcp+msgpack://localhost:8080', {
       skiff: {dbPath: dbPath},
-      port: 7000
+      port: 7000,
+      gossip: {
+        port: 6000
+      }
     });
     done();
   });

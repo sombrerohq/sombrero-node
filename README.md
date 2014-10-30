@@ -42,6 +42,8 @@ var node = Node(url, options);
 * `skiff`: all the [options supported by skiff](https://github.com/pgte/skiff#options)
 * `port`: the TCP port for exposing the RPC server. Defaults to `5201`.
 * `transport`: a transport module provider. Defaults to [this](https://github.com/sombrerohq/sombrero-node/blob/master/lib/transport.js).
+* `gossip`: an object with the following attributes:
+  * `port`: gossip port. defaults to 8217
 
 # Use
 
