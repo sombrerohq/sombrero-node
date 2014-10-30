@@ -21,6 +21,7 @@ describe('gossip', function() {
   mkdirp.sync(dbPath);
 
   var leader;
+  var newLeader;
   var nodes = [];
 
   it('can create leader', function(done) {
@@ -37,9 +38,9 @@ describe('gossip', function() {
     });
   });
 
-  it('create 2 followers', function(done) {
+  it('create 4 followers', function(done) {
     var node;
-    for (var i = 0 ; i < 2 ; i ++) {
+    for (var i = 0 ; i < 4 ; i ++) {
       node = Node('tcp+msgpack://localhost:' + (8091 + i), {
         skiff: {
           dbPath: path.join(dbPath, 'node' + i),
@@ -90,6 +91,32 @@ describe('gossip', function() {
     leader.close(done);
   });
 
+  it('waits fpr a leader', {timeout: 4e3}, function(done) {
+    nodes.forEach(function(node) {
+      node.once('leader', haveLeader);
+    });
+
+    function haveLeader(node) {
+      if (!newLeader) {
+        newLeader = node;
+        done();
+      }
+    }
+  });
+
+  it('follower puts', function(done) {
+    var follower;
+    var node;
+    for (var i = 1 ; i < nodes.length ; i ++) {
+      node = nodes[i];
+      if (node != newLeader) {
+        follower = node;
+        break;
+      }
+    }
+    follower.put('key', 'value', done);
+  });
+
   it('waits a bit', {timeout: 4e3}, function(done) {
     setTimeout(done, 3e3);
   });
@@ -97,7 +124,7 @@ describe('gossip', function() {
   it('every node but the leader knows the leader', function(done) {
     nodes.forEach(function(node) {
       if (node != leader) {
-        assert.equal(node.gossip.cluster.get('leader'), leader.id);
+        assert.equal(node.gossip.cluster.get('leader'), newLeader.id);
       }
     });
     done();
