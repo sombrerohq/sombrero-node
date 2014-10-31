@@ -58,6 +58,9 @@ function debug(node) {
   node.on('listening', function(address) {
     log('listening on %s', address);
   });
+  node.on('cluster change', function(change) {
+    log('gossiped cluster change:', change);
+  });
 }
 
 debug.debug2 = function(node) {

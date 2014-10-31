@@ -22,6 +22,7 @@ describe('gossip', function() {
 
   var leader;
   var newLeader;
+  var lastFollower;
   var nodes = [];
 
   it('can create leader', function(done) {
@@ -59,7 +60,7 @@ describe('gossip', function() {
 
   it('can join followers', function(done) {
     async.each(nodes, function(node, cb) {
-      if (node.id != leader  .id) {
+      if (node.id != leader.id) {
         leader.join(node.id, node.skiff.metadata, cb);
       }
       else {
@@ -91,7 +92,7 @@ describe('gossip', function() {
     leader.close(done);
   });
 
-  it('waits fpr a leader', {timeout: 4e3}, function(done) {
+  it('waits for a leader', {timeout: 4e3}, function(done) {
     nodes.forEach(function(node) {
       node.once('leader', haveLeader);
     });
@@ -99,32 +100,40 @@ describe('gossip', function() {
     function haveLeader(node) {
       if (!newLeader) {
         newLeader = node;
+        // debug(newLeader);
         done();
       }
     }
   });
 
-  it('follower puts', function(done) {
-    var follower;
+  it('has a follower', function(done) {
     var node;
     for (var i = 1 ; i < nodes.length ; i ++) {
       node = nodes[i];
-      if (node != newLeader) {
-        follower = node;
+      if (node.id != newLeader.id && node.id != leader.id) {
+        lastFollower = node;
         break;
       }
     }
-    follower.put('key', 'value', done);
+    assert(!!lastFollower, 'has last follower');
+    assert.notEqual(lastFollower.id, newLeader.id);
+    done();
   });
 
-  it('waits a bit', {timeout: 4e3}, function(done) {
-    setTimeout(done, 3e3);
+  it('follower puts', function(done) {
+    lastFollower.put('key', 'value', done);
   });
 
-  it('every node but the leader knows the leader', function(done) {
+  it('waits a bit', {timeout: 11e3}, function(done) {
+    setTimeout(done, 10e3);
+  });
+
+  it('every node but the old leader knows the leader', function(done) {
     nodes.forEach(function(node) {
       if (node != leader) {
-        assert.equal(node.gossip.cluster.get('leader'), newLeader.id);
+        assert.equal(node.gossip.cluster.get('leader'), newLeader.id,
+          node.id + ' thinks the leader is ' +
+          node.gossip.cluster.get('leader'));
       }
     });
     done();
