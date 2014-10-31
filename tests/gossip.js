@@ -122,10 +122,6 @@ describe('gossip', function() {
     done();
   });
 
-  it('follower puts', {timeout: 6e3}, function(done) {
-    lastFollower.put('key', 'value', done);
-  });
-
   it('waits a bit', {timeout: 15e3}, function(done) {
     setTimeout(done, 14e3);
   });
