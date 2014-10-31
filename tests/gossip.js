@@ -88,11 +88,7 @@ describe('gossip', function() {
     done();
   });
 
-  it('leader dies', function(done) {
-    leader.close(done);
-  });
-
-  it('waits for a leader', {timeout: 4e3}, function(done) {
+  it('leader dies', {timeout: 6e3}, function(done) {
     nodes.forEach(function(node) {
       node.once('leader', haveLeader);
     });
@@ -104,6 +100,12 @@ describe('gossip', function() {
         done();
       }
     }
+
+    leader.close(function(err) {
+      if (err) {
+        throw err;
+      }
+    });
   });
 
   it('has a follower', function(done) {
@@ -124,8 +126,8 @@ describe('gossip', function() {
     lastFollower.put('key', 'value', done);
   });
 
-  it('waits a bit', {timeout: 11e3}, function(done) {
-    setTimeout(done, 10e3);
+  it('waits a bit', {timeout: 15e3}, function(done) {
+    setTimeout(done, 14e3);
   });
 
   it('every node but the old leader knows the leader', function(done) {
